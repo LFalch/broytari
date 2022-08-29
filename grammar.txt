@@ -1,0 +1,32 @@
+WholeName (regex) : .*\z
+Name (regex) : [\w_]*
+Word (regex) : \w*
+Character (regex) : \w
+Signifier (regex) : \^\d
+
+Start :
+Line |
+Line
+Start
+
+Line :
+% Directive |
+= Def_phone |
+=# WholeName | // Era/language stage name
+// WholeName | // Comment
+Sound_change
+
+Directive :
+cat(egory)? Name ( : ( Word )* )? |
+feat(ure)? Name ( : ( +Word | -Word )* )? |
+sym(bol)? Character : ( 'Word' | +Name | -Name | Name )*
+
+Def_phone :
+Word ( : ( +Name | -Name | 0Name | Name )* )?   // + and - mean feature, otherwise category. Using the wrong one is an error.
+
+Sound_change :
+Word* > Word* ( / Environment | /! Environment )*
+
+Environment :
+# | _ | ? | * | ( | ) |
+[(+|-)? Name] | Signifier | Word

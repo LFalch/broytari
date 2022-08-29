@@ -1,0 +1,108 @@
+%cat consonant : p t k b d g m n ng f v s þ ð sj kj h l j r
+%cat plosive : p t k b d g
+%cat nasal : m n ng
+%cat fricative : f v s þ ð sj kj h
+%cat approximant : l j
+%cat rhotic : r
+%cat labial : p b m v
+%cat alveolar : t d n r l
+%cat palatal : sj kj j
+%cat velar : ng k g
+%cat glottal : h
+%feature voiced : +b +d +g +v +r +l +j +m +n +ng -p -t -k -f -s -þ +ð -h -sj -kj
+
+%symbol C : consonant
+
+%cat vowel : i í u ú o ó ǫ ǫ́ a á ę æ ø ǿ y ý ei ęi øy ey au ǫu
+%cat high : i í y ý u ú
+%cat mid : e é ø ǿ o ó
+%cat low : ę æ a á ǫ ǫ́
+%feature rounded : +y +ý +ø +ǿ +u +ú +o +ó +ǫ +ǫ́ -i -í -e -é -ę -æ -a -á
+%feature long : +ý +ǿ +ú +ó +ǫ́ +í +é +æ +á -y -ø -u -o -ǫ -i -e -ę -a
+%feature nasal : -i -u -a +ĩ +ũ +ã
+
+%symbol V : vowel
+
+// Sound changes
+
+ęi > ei
+ey > øy
+ǫu > au
+ę > e
+ǫ́ > á
+
+= ǫu
+= ęi
+= ey
+= ǫ́
+= ę
+
+=# Old Norwegian
+
+ǫ > o / _rð
+ǫ > ø / _rC / _l
+o > ó / _rð
+
+// Analogically to a
+ǫ > o
+þ > ð / unstressed
+ð > d / #_
+þ > t
+ð >
+á > a / n_tt
+V[-nasal]n > V[+nasal] / _# / ending
+i > e / unstressed
+u > o / unstressed
+
+á > å
+
+= å : low +rounded +long vowel
+= ǫ
+= þ
+= ð
+= á
+
+skj > sj
+rs > sj
+
+=# Norwegian
+
+ĩ > æ
+ũ > ó
+ã > ó
+= ĩ
+= ũ
+= ã
+a > æ / _# / unstressed
+e > é / unstressed
+o > å
+e > æ
+i > é
+u > ó
+ú > u
+ó > o
+í > i
+é > e
+ǿ > ø
+%feature long
+= ú
+= ó
+= í
+= é
+= ǿ
+ll > llj
+= llj : +voiced palatal approximant
+nn > nnj
+= nnj : +voiced palatal nasal
+dd > ddj
+= ddj : +voiced palatal plosive
+tt > ttj
+= ttj : -voiced palatal plosive
+// Capitalisation
+l > L / sometimes
+= L : -voiced alveolar rhotic
+
+=# North Norwegian
+
+kj > sj
+= kj
