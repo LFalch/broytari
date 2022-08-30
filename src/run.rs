@@ -1,20 +1,23 @@
-use crate::{file::{Line, Directive, PhoneQualifier}, Phonology};
+use std::collections::HashMap;
+
+use crate::{file::{Line, Directive, PhoneQualifier, SoundChange}, Phonology, Phone};
 
 
 pub fn run(lines: &[Line], words: &mut [String], stage: Option<&str>) -> Phonology {
     let mut phonology = Phonology::default();
+    let mut symbols = HashMap::new();
 
     let mut stage_found = stage.is_none();
 
     for line in lines {
         match line {
-            Line::Stage(s) => {
+            Line::Stage(_, s) => {
                 if Some(&**s) == stage {
                     stage_found = true;
                     break;
                 }
             }
-            Line::Directive(dir) => match dir {
+            Line::Directive(_, dir) => match dir {
                 Directive::Category(cat, phones) => {
                     let cat = phonology.add_category(cat);
                     for phone in phones {
@@ -31,11 +34,11 @@ pub fn run(lines: &[Line], words: &mut [String], stage: Option<&str>) -> Phonolo
                     }
                 }
                 Directive::Symbol(c, phones, qualifiers) => {
-                    eprintln!("new symbol {c}");
+                    symbols.insert(*c, (&**phones, &**qualifiers));
                 },
             }
-            Line::Change(sc) => eprintln!("{:?}", sc),
-            Line::Phone(phone, qualifiers) => {
+            Line::Change(_, sc) => apply_sound_change(sc, &symbols, words),
+            Line::Phone(_, phone, qualifiers) => {
                 phonology.clear_phone(phone);
                 for qualifier in qualifiers {
                     match qualifier {
@@ -54,4 +57,8 @@ pub fn run(lines: &[Line], words: &mut [String], stage: Option<&str>) -> Phonolo
     }
 
     phonology
+}
+
+fn apply_sound_change(sound_change: &SoundChange, symbols: &HashMap<char, (&[Phone], &[PhoneQualifier])>, words: &mut [String]) {
+    eprintln!("{:?}", sound_change);
 }

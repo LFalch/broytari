@@ -19,7 +19,6 @@
 %cat low : ę æ a á ǫ ǫ́
 %feature rounded : +y +ý +ø +ǿ +u +ú +o +ó +ǫ +ǫ́ -i -í -e -é -ę -æ -a -á
 %feature long : +ý +ǿ +ú +ó +ǫ́ +í +é +æ +á -y -ø -u -o -ǫ -i -e -ę -a
-%feature nasal : -i -u -a +ĩ +ũ +ã
 
 %symbol V : vowel
 
@@ -39,6 +38,11 @@ ey > øy
 
 =# Old Norwegian
 
+hl > l / #_
+hn > n / #_
+hr > r / #_
+hj > j / #_
+
 ǫ > o / _rð
 ǫ > ø / _rC / _l
 o > ó / _rð
@@ -50,7 +54,11 @@ o > ó / _rð
 þ > t
 ð >
 á > a / n_tt
-V[-nasal]n > V[+nasal] / _# / ending
+%feature nasalised : -i -u -a
+= ĩ : -rounded +nasalised high vowel
+= ũ : +rounded +nasalised high vowel
+= ã : -rounded +nasalised low vowel
+V[-nasalised]n > V[+nasalised] / _# / ending
 i > e / unstressed
 u > o / unstressed
 
@@ -73,16 +81,22 @@ rs > sj
 = ĩ
 = ũ
 = ã
+jú > ý
+jó > jǿ
+
+
 a > æ / _# / unstressed
 e > é / unstressed
 o > å
 e > æ
 i > é
+y > ǿ
 u > ó
 ú > u
 ó > o
 í > i
 é > e
+ý > y
 ǿ > ø
 %feature long
 = ú

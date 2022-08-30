@@ -7,24 +7,24 @@ pub fn read<P: AsRef<Path>>(path: P) -> io::Result<Vec<Line>> {
 
     let mut lines = Vec::new();
 
-    for line in file.lines() {
+    for (line, line_no) in file.lines().zip(1..) {
         let line = line?;
         let line = line.trim();
 
         if line.is_empty() {
             continue;
         } else if line.starts_with("%") {
-            lines.push(Line::Directive(parse_directive(&line[1..]).unwrap()));
+            lines.push(Line::Directive(line_no, parse_directive(&line[1..]).unwrap()));
         } else if line.starts_with("=#") {
-            lines.push(Line::Stage(line[2..].trim_start().to_owned()));
+            lines.push(Line::Stage(line_no, line[2..].trim_start().to_owned()));
         } else if line.starts_with("=") {
             let (phone, qualifiers) = parse_new_phone(line[1..].trim_start()).unwrap();
-            lines.push(Line::Phone(phone, qualifiers));
+            lines.push(Line::Phone(line_no, phone, qualifiers));
         } else if line.starts_with("//") {
             // comment
             continue;
         } else {
-            lines.push(Line::Change(parse_sound_change(line).unwrap()));
+            lines.push(Line::Change(line_no, parse_sound_change(line).unwrap()));
         }
     }
 
@@ -102,17 +102,17 @@ fn parse_directive(s: &str) -> Option<Directive> {
 
 #[derive(Debug)]
 pub enum Line {
-    Directive(Directive),
-    Stage(String),
-    Phone(Phone, Vec<PhoneQualifier>),
-    Change(SoundChange),
+    Directive(u32, Directive),
+    Stage(u32, String),
+    Phone(u32, Phone, Vec<PhoneQualifier>),
+    Change(u32, SoundChange),
 }
 
 impl Display for Line {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use self::Line::*;
         match self {
-            Directive(dir) => {
+            Directive(_, dir) => {
                 use self::Directive::*;
                 match dir {
                     Category(cat, phones) => {
@@ -149,9 +149,20 @@ impl Display for Line {
                     }
                 }
             }
-            Stage(name) => write!(f, "#= {name}"),
-            Phone(phone, qualifiers) => todo!(),
-            Change(sc) => {
+            Stage(_, name) => write!(f, "#= {name}"),
+            Phone(_, phone, qualifiers) =>  {
+                write!(f, "= {} :", phone.inner)?;
+                for qualifier in qualifiers {
+                    match qualifier {
+                        PhoneQualifier::Cat(s) => write!(f, " {s}")?,
+                        PhoneQualifier::Minus(s) => write!(f, " -{s}")?,
+                        PhoneQualifier::Plus(s) => write!(f, " +{s}")?,
+                        PhoneQualifier::Zero(s) => write!(f, " 0{s}")?,
+                    }
+                }
+                Ok(())
+            },
+            Change(_, sc) => {
                 write!(f, "{} -> {}", sc.from, sc.to)?;
                 for senv in &sc.special_environments {
                     write!(f, " / {}", senv)?;
